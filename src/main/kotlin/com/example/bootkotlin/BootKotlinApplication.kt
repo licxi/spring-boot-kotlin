@@ -51,7 +51,7 @@ class Swagger2 {
                 .title("Spring Boot中使用Swagger2构建RESTful APIs")
                 .description("这是测试")
                 .termsOfServiceUrl("https://www.baidu.com")
-                .contact(Contact("liu", "https://www.baidu.com", "417708459@qq.com"))
+                .contact(Contact("liu", "https://www.baidu.com", "123121212313@qq.com"))
                 .version("1.0")
                 .build()
     }

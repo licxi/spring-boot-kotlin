@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="admin/header :: head">
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<!-- 当删除考试时提示框 -->
+<div class="modal fade" id="del_exam" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">确认删除</h4>
+            </div>
+            <div class="modal-body">
+                <h3>此操作将会删除该次考试的所有内容，包括用户的考试成绩！</h3>
+                <h3>删除是不可恢复的,你确认要删除吗?</h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <a type="submit" id="del" class="btn btn-primary" data-dismiss="modal">删除</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div th:replace="admin/header::nav"></div>
+<div class="my_table">
+    <h2>考试列表</h2>
+    <hr>
+    <form id="searchForm" name="searchform" class="well form-search"
+          action="" method="GET">
+        <div class="row">
+            <div class="col-sm-6 col-lg-6">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon" id="sizing-addon1">考试标题</span>
+                    <input type="text" name="title" th:value="${title}" class="form-control" placeholder="支持模糊查询"
+                           aria-describedby="sizing-addon1">
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-6">
+                <input type="submit" class="btn btn-info" value="搜索"/>
+            </div>
+        </div>
+    </form>
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered table-striped center">
+            <thead>
+            <tr>
+                <th style="width: 5%">编号</th>
+                <th style="width: 33%">标题</th>
+                <th style="width: 15%">开始时间</th>
+                <th style="width: 15%">结束时间</th>
+                <th style="width: 8%">状态</th>
+                <th style="width: 8%">出题人</th>
+                <th style="width: 8%">考试人数</th>
+                <th style="width: 8%">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <!--<foreach name="exams_list" item="vo">-->
+            <tr th:each="exam: ${exams}" th:id="tr+${exam.id}">
+                <td th:text="${exam.id}">1</td>
+                <td><a href="" th:text="${exam.title}" th:href="@{/admin/question/examId/{examId}(examId=${exam.id})}">标题</a>
+                </td>
+                <td th:text="${#dates.format(exam.startTime,'yyyy-MM-dd HH:mm')}">{$vo.start_time}</td>
+                <td th:text="${#dates.format(exam.endTime,'yyyy-MM-dd HH:mm')}">{$vo.end_time}</td>
+                <td><span th:id="span+${exam.id}" th:text="${exam.status==1?'进行中':'未开始'}">{$vo.status}</span></td>
+
+                <td th:text="${exam.author}">{$vo.author}</td>
+                <td th:text="${exam.joinExamNum}">
+                    <!--<a href="" ><span th:text="${exam.joinExamNum}"></span></a></td>-->
+                <td>
+
+                    <div class="dropdown">
+                        <button type="button" class="btn dropdown-toggle"
+                                id="dropdownMenu1" data-toggle="dropdown">
+                            操作 <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu"
+                            aria-labelledby="dropdownMenu1" style="min-width: 80px;">
+                            <li role="presentation"><a class="btn" role="menuitem" tabindex="-1"
+                                                       onclick="change_exam_status(${vo.id})"
+                                                       id="a{$vo.exam_id}">
+                                <!--<if condition="$vo[status] eq '进行中'">终止-->
+                                <!--<else/>-->
+                                <!--开始-->
+                                <!--</if>-->
+                                <span th:text="${exam.status==1?'终止':'开始'}" th:id="status+${exam.id}"></span>
+                            </a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1"
+                                                       href="">成绩</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1"
+                                                       th:href="@{/admin/exam/edit/{examId}(examId=${exam.id})}">编辑</a>
+                            </li>
+                            <li><a class="btn" onclick="del(this)" th:value="${exam.id}">删除</a></li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <!--</foreach>-->
+
+            </tbody>
+        </table>
+    </div>
+    <span colspan="13" th:if="${exams.numberOfElements}eq 0">暂无相关信息</span>
+    <div style="text-align: right;">共<span id="total" th:text="${exams.totalElements}">0</span>条记录</div>
+    <div style="text-align: center;" id="pages" class="pagination" th:if="${exams.totalPages} &gt; 1">
+    </div>
+    <!--<include file="Public/page" />-->
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    function del(obj) {
+        var examId = $(obj).attr("value")
+        var csrf = [[${_csrf.getToken()}]]
+        if (confirm("此操作将会删除该次考试的所有内容，包括用户的考试成绩,且不能恢复！确定要删除吗？")) {
+            var url = "/admin/exam/delete/" + examId;
+            jQuery.post(url, {_csrf: csrf},
+                function (msg) {
+                    if (msg.code == 200) {
+                        $("#tr" + examId).remove();//在表格中移除被删除的数据
+                        var total = $("#total")
+                        total.text(parseInt(total.text()) - 1)
+                    } else {
+                        alert("删除失败");
+                    }
+                }, 'json').error(function () {
+                alert("网络连接错误，请稍后再试");
+            });
+        }
+    }
+
+    function change_exam_status(exam_id) {
+        // var url = "/admin/exam/save/"+exam_id;
+        // jQuery.post(url, {modifStatus:true},
+        //     function (msg) {
+        //         if (msg.code = 200) {
+        //             $("#status" + exam_id).text(msg.message);
+        //             $("#span" + exam_id).text(msg.message); //todo
+        //         } else if (msg.info === "error") {
+        //             alert(msg.msg);
+        //         }
+        //     }, 'json').error(function () {
+        //     alert("网络连接错误，请稍后再试");
+        // });
+    }
+
+    function checkaction(v) {
+        if (v == 0) {
+            document.searchform.action = "";
+        } else {
+            document.searchform.action = "";
+        }
+        if (v == 2) {
+            document.searchform.action = "";
+        }
+        searchform.submit();
+    }
+
+    /*]]>*/
+</script>
+<div th:replace="admin/header::modify_info"></div>
+<div th:replace="admin/header::modify_password"></div>
+<div th:replace="admin/header::js"></div>
+<script type="text/javascript" src="../../../static/js/jqpaginator.min.js" th:src="@{/js/jqpaginator.min.js}"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    //var currentPage = [[${exams.number}]];
+    var title = [[${title}]]
+    $('#pages').jqPaginator({
+        totalPages: [[${exams.totalPages}]],
+        visiblePages: [[${exams.totalPages}]],
+        currentPage: [[${exams.number+1}]],
+        first: '<li class="first"><a href="javascript:void(0);">第一页<\/a><\/li>',
+        prev: '<li class="prev"><a href="javascript:void(0);">上一页<\/a><\/li>',
+        next: '<li class="next"><a href="javascript:void(0);">下一页<\/a><\/li>',
+        last: '<li class="last"><a href="javascript:void(0);">最后一页<\/a><\/li>',
+        page: '<li class="page"><a href="javascript:void(0);">{{page}}<\/a><\/li>',
+        onPageChange: function (num, type) {
+            //$('#total').html('当前第' + num + '页');
+            console.log(num + ":" + type)
+            if ("change" == type) {
+
+                if (title != "") {
+                    window.location.href = "/admin/exam?page=" + (num) + "&size=2" + "&title=" + title
+                } else {
+                    window.location.href = "/admin/exam?page=" + (num) + "&size=2"
+                }
+            }
+        }
+    });
+    /*]]>*/
+</script>
+
+</body>
+</html>

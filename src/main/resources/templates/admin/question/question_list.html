@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="admin/header :: head">
+    <meta charset="UTF-8">
+</head>
+<body>
+<div class="my_table">
+    <div th:replace="admin/header::nav"></div>
+    <h2>试题列表<span style="padding-left: 30%">{$title}</span></h2>
+    <hr>
+    <div class="search">
+        <form id="searchForm" name="searchform" class="well form-search"
+              th:action="@{/admin/question/examId/{examId}(examId=${examId})}" method="GET" onSubmit="check();">
+            <div class="row">
+                <div class="col-sm-6 col-lg-6">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon" id="sizing-addon1">题目</span>
+                        <input type="text" name="title" th:value="${title}" class="form-control"
+                               placeholder="支持模糊查询" aria-describedby="sizing-addon1">
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-6">
+                    <input type="submit" class="btn btn-info" value="搜索"
+                           onclick="checkaction(1);"/>
+                    <a class="btn btn-info navbar-right" th:href="@{/admin/question/add(examId=${examId})}">添加</a>
+                    <a class="btn btn-info navbar-right" style="margin-right: 5px;"
+                       th:href="@{/admin/question/import(examId=${examId})}"
+                    >导入</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="dataBox">
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered table-striped center">
+                <thead>
+                <tr>
+                    <th style="width: 3%;text-align: center;">编号</th>
+                    <th style="width: 20%">问题</th>
+                    <th style="width: 4%">类型</th>
+                    <th style="width: 16%">选项A</th>
+                    <th style="width: 16%">选项B</th>
+                    <th style="width: 16%">选项C</th>
+                    <th style="width: 16%">选项D</th>
+                    <th style="width: 3%">答案</th>
+                    <th style="width: 19%">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="question:${questions}" th:id="tr+${question.id}">
+                    <td><a href="#" th:text="${question.id}">{$vo.id}</a></td>
+                    <td th:text="${question.title}">{$vo.question}</td>
+                    <td>
+                        <span th:if="${question.type==0}">判断题</span>
+                        <span th:if="${question.type==1}">单选题</span>
+                        <span th:if="${question.type==2}">多选题</span>
+                    </td>
+                    <td th:text="${question.answer1 !=null?question.answer1:''}">{$vo.answer1}</td>
+                    <td th:text="${question.answer2 !=null?question.answer2:''}">{$vo.answer2}</td>
+                    <td th:text="${question.answer3 !=null?question.answer3:''}">{$vo.answer3}</td>
+                    <td th:text="${question.answer4 !=null?question.answer4:''}">{$vo.answer4}</td>
+                    <td th:text="${question.rightAnswer}">{$vo.rightanswer}</td>
+                    <td>
+                        <div class="dropdown">
+                            <button type="button" class="btn dropdown-toggle"
+                                    id="dropdownMenu1" data-toggle="dropdown">
+                                操作 <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu"
+                                aria-labelledby="dropdownMenu1" style="min-width: 80px;">
+                                <li role="presentation"><a role="menuitem" tabindex="-1"
+                                                           href="">编辑</a>
+                                </li>
+                                <!-- <li><a class="btn" data-toggle="modal" data-target="#del_question" onclick="delete_question({$vo.id})">删除</a></li> -->
+                                <li><a class="btn" onclick="delete_question(this)" th:value="${question.id}">删除</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="../../../static/js/jqpaginator.min.js"
+            th:src="@{/js/jqpaginator.min.js}"></script>
+    <span colspan="13" th:if="${questions.numberOfElements}eq 0">没有题目,请导入题目,否则将无法进行考试！</span>
+    <div style="text-align: right;">共<span id="total" th:text="${questions.totalElements}">0</span>条记录</div>
+    <div style="text-align: center;" id="pages" class="pagination" th:if="${questions.totalPages} &gt; 1">
+    </div>
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var question = [[${title}]]
+    var examId = [[${examId}]]
+    $('#pages').jqPaginator({
+        totalPages: [[${questions.totalPages}]],
+        visiblePages: [[${questions.totalPages}]],
+        currentPage: [[${questions.number+1}]],
+        first: '<li class="first"><a href="javascript:void(0);">第一页<\/a><\/li>',
+        prev: '<li class="prev"><a href="javascript:void(0);">上一页<\/a><\/li>',
+        next: '<li class="next"><a href="javascript:void(0);">下一页<\/a><\/li>',
+        last: '<li class="last"><a href="javascript:void(0);">最后一页<\/a><\/li>',
+        page: '<li class="page"><a href="javascript:void(0);">{{page}}<\/a><\/li>',
+        onPageChange: function (num, type) {
+            //$('#total').html('当前第' + num + '页');
+            console.log(num + ":" + type)
+            if ("change" == type) {
+                if (question != null && question != "") {
+                    window.location.href = "/admin/question/examId/" + examId + "?page=" + (num) + "&size=2" + "&question=" + question
+                } else {
+                    window.location.href = "/admin/question/examId/" + examId + "?page=" + (num) + "&size=2"
+                }
+            }
+        }
+    });
+    /*]]>*/
+</script>
+<script>
+
+    function delete_question(id) {
+        /*$("#del").click(function() {
+          var url = "{:U('admin/questions/del')}";
+          jQuery.post(url,{"id" : id},
+                function(msg) {
+                  if (msg.info == 'ok') {
+                    $("#tr"+id).remove();//在表格中移除被删除的数据
+                    $("#total").text("共"+{$total-1}+"条记录");
+                    alert(msg.msg);
+                  } else {
+                    alert(msg.msg);
+                  }
+                }, 'json').error(function() {
+                  alert("网络连接错误，请稍后再试");
+            });
+        });*/
+        if (confirm("删除是不可恢复的,你确认要删除吗?")) {
+            var url = "{:U('admin/questions/del')}";
+            jQuery.post(url, {"id": id},
+                function (msg) {
+                    if (msg.info == 'ok') {
+                        $("#tr" + id).remove();//在表格中移除被删除的数据
+                        $("#total").text("");
+                        alert(msg.msg);
+                    } else {
+                        alert(msg.msg);
+                    }
+                }, 'json').error(function () {
+                alert("网络连接错误，请稍后再试");
+            });
+        }
+    }
+
+    function checkaction(v) {
+        // if (v == 0) {
+        //     document.searchform.action = "";
+        // } else {
+        //     document.searchform.action = "{";
+        // }
+        // if (v == 2) {
+        //     document.searchform.action = "";
+        // }
+        searchform.submit();
+    }
+</script>
+
+<div th:replace="admin/header::modify_info"></div>
+<div th:replace="admin/header::modify_password"></div>
+<div th:replace="admin/header::js"></div>
+</body>
+</html>

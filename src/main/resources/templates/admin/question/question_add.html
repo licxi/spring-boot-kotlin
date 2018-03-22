@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="admin/header :: head">
+    <meta charset="UTF-8">
+</head>
+<body>
+<div th:replace="admin/header::nav"></div>
+<div style="padding-top: 50px;padding-left: 50px;padding-right: 50px">
+    <h2 th:text="${question!=null?'编辑题目':'添加题目'}"><a class="btn btn-info" style="float: right;"
+                                                     th:href="@{/admin/exam}">返回考试列表</a>
+    </h2>
+    <hr>
+    <div align="center">
+        <div class="input-group">
+            <form id="addform" method="post">
+                <input name="id" th:value="${question !=null ?question.id:0}" value="" type="hidden" id="question_id"
+                       th:if="${question != null}"/>
+                <input th:value="${_csrf.getToken()}" name="_csrf" id="_csrf" hidden>
+                <input name="examId" type="hidden" id="examId" th:value="${examId}"/>
+                <div class="control-group">
+                    <label>题目：(<font color="red">必填，至少4个最多100个汉字</font>)
+                    </label>
+                    <textarea class="form-control" id="title" name="title" datatype="*4-50"
+                              th:text="${question!=null?question.title:''}">{$questions_info.question}</textarea>
+                </div>
+
+                <div class="control-group">
+                    <label>题目类型：(<font color="red">必填</font>)
+                    </label>
+                    <select id="type" name="type" class="form-control">
+                        <option value="0" th:selected="${question==null?false:question.type==0}">判断题</option>
+                        <option value="1" th:selected="${question==null?true:question.type==1}">单选题</option>
+                        <option value="2" th:selected="${question==null?false:question.type==2}">多选题</option>
+                    </select>
+                </div>
+
+                <div id="answer" th:hidden="${question==null?false:question.type==0}">
+                    <div class="control-group">
+                        <label>选项一：(<font color="red">必填</font>)
+                        </label> <input type="text" id="answer1" name="answer1" class="form-control"
+                                        th:value="${question!=null?(question.answer1!=null?question.answer1:''):''}"
+                                        datatype="*1-50"/>
+                    </div>
+
+                    <div class="control-group">
+                        <label>选项二：(<font color="red">必填</font>)
+                        </label> <input type="text" id="answer2" name="answer2" class="form-control"
+                                        th:value="${question!=null?(question.answer2!=null?question.answer2:''):''}"
+                                        datatype="*1-50"/>
+                    </div>
+
+                    <div class="control-group">
+                        <label>选项三：(<font color="red">必填</font>)
+                        </label> <input type="text" id="answer3" name="answer3" class="form-control"
+                                        th:value="${question!=null?(question.answer3!=null?question.answer3:''):''}"
+                                        datatype="*1-50"/>
+                    </div>
+
+                    <div class="control-group">
+                        <label>选项四：(<font color="red">必填</font>)
+                        </label> <input type="text" id="answer4" name="answer4" class="form-control"
+                                        th:value="${question!=null?(question.answer4!=null?question.answer4:''):''}"
+                                        datatype="*1-50"/>
+                    </div>
+                </div>
+
+                <div class="control-group" id="selectAnswer">
+                    <label>正确答案：</label>
+                    <div id="answerType" th:if="${question==null?false:question.type==0}">
+                        <label><input type="radio" name="rightAnswer" value="正确"
+                                      th:checked="${question==null?false:question.rightAnswer=='正确'}">正确</label>
+                        <label><input type="radio" name="rightAnswer" value="错误"
+                                      th:checked="${question==null?false:question.rightAnswer=='错误'}">错误</label>
+                    </div>
+                    <div id="answerType" th:if="${question==null?true:question.type==1}">
+                        <label><input type="radio" name="rightAnswer" value="A"
+                                      th:checked="${question==null?false:question.rightAnswer=='A'}">A</label>
+                        <label><input type="radio" name="rightAnswer" value="B"
+                                      th:checked="${question==null?false:question.rightAnswer=='B'}">B</label>
+                        <label><input type="radio" name="rightAnswer" value="C"
+                                      th:checked="${question==null?false:question.rightAnswer=='C'}">C</label>
+                        <label><input type="radio" name="rightAnswer" value="D"
+                                      th:checked="${question==null?false:question.rightAnswer=='D'}">D</label>
+                    </div>
+                    <div id="answerType" th:if="${question==null?false:question.type==2}">
+                        <label><input type="checkbox" name="rightAnswer" value="A"
+                                      th:checked="${question==null?false:question.rightAnswer=='A'}">A</label>
+                        <label><input type="checkbox" name="rightAnswer" value="B"
+                                      th:checked="${question==null?false:question.rightAnswer=='B'}">B</label>
+                        <label><input type="checkbox" name="rightAnswer" value="C"
+                                      th:checked="${question==null?false:question.rightAnswer=='C'}">C</label>
+                        <label><input type="checkbox" name="rightAnswer" value="D"
+                                      th:checked="${question==null?false:question.rightAnswer=='D'}">D</label>
+                    </div>
+
+                    <!--<select name="rightAnswer" class="form-control" th:id="danxuan">-->
+                    <!--<option value="A" th:selected="${title!=null?(title.rightAnswer==A):true}">A</option>-->
+                    <!--<option value="B" th:selected="${title!=null?(title.rightAnswer==A):false}">B</option>-->
+                    <!--<option value="C" th:selected="${title!=null?(title.rightAnswer==A):false}">C</option>-->
+                    <!--<option value="D" th:selected="${title!=null?(title.rightAnswer==A):false}">D</option>-->
+                    <!--</select>-->
+                </div>
+                <div class="control-group" style="padding-top: 5PX;text-align: center;">
+                    <input type="button" class="btn btn-primary Sub" onclick="back()" value="取消"/>
+                    <input type="button" class="btn btn-primary Sub" value="保存" id="submit"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#type").on("change", function (event) {
+        //console.log(event)
+        //console.log($("#type ").val())
+        var answerType = $("#answerType")
+        var selectAnswer = $("#selectAnswer")
+        var answer = $("#answer")
+        answerType.remove()
+        var selectType = $("#type").val()
+        if (selectType == 0) {
+            answer.hide()
+            selectAnswer.append(panduan())
+        } else if (selectType == 1) {
+            answer.show()
+            selectAnswer.append(danxuan())
+        } else if (selectType = 2) {
+            answer.show()
+            selectAnswer.append(duoxuan())
+        }
+    })
+
+    function danxuan() {
+        return "<div id=\"answerType\">\n" +
+            "<label><input type=\"radio\" name=\"rightAnswer\" value=\"A\">A</label>\n" +
+            "<label><input type=\"radio\" name=\"rightAnswer\"  value=\"B\">B</label>\n" +
+            "<label><input type=\"radio\" name=\"rightAnswer\"  value=\"C\">C</label>\n" +
+            "<label><input type=\"radio\" name=\"rightAnswer\" value=\"D\">D</label>\n" +
+            "</div>"
+    }
+
+    function panduan() {
+        return "<div id=\"answerType\">\n" +
+            "<label><input type=\"radio\" name=\"rightAnswer\" value=\"正确\">正确</label>\n" +
+            "<label><input type=\"radio\" name=\"rightAnswer\" value=\"错误\">错误</label>\n" +
+            "</div>"
+    }
+
+    function duoxuan() {
+        return "<div id=\"answerType\">\n" +
+            "<label><input type=\"checkbox\" name=\"rightAnswer\"  value=\"A\">A</label>\n" +
+            "<label><input type=\"checkbox\" name=\"rightAnswer\"  value=\"B\">B</label>\n" +
+            "<label><input type=\"checkbox\" name=\"rightAnswer\" value=\"C\">C</label>\n" +
+            "<label><input type=\"checkbox\" name=\"rightAnswer\"  value=\"D\">D</label>\n" +
+            "</div>"
+    }
+
+    function back() {
+        window.location.href = "";
+    }
+
+    $("#submit").click(function (event) {
+        var question = $("#title");
+        var answer1 = $("#answer1");
+        var answer2 = $("#answer2");
+        var answer3 = $("#answer3");
+        var answer4 = $("#answer4");
+
+        if (question.val() == "") {
+            alert("题目不能为空！");
+            question.focus();
+            return false;
+        }
+        var data = ""
+        var selectType = $("#type ").val()
+        if (selectType == 0) {
+            var rightAnswer = $('input:radio[name="rightAnswer"]:checked').val();
+            if (rightAnswer == null) {
+                alert("请设置答案")
+                return
+            }
+            //console.log(rightAnswer)
+            data = {title: question.val(), type: selectType, rightAnswer: rightAnswer}
+            //console.log(data)
+            //
+        } else if (selectType == 1 || selectType == 2) {
+            if (answer1.val() == "") {
+                alert("选项一不能为空！");
+                answer1.focus();
+                return false;
+            }
+            if (answer2.val() == "") {
+                alert("选项二不能为空！");
+                answer2.focus();
+                return false;
+            }
+            if (answer3.val() == "") {
+                alert("选项三不能为空！");
+                answer3.focus();
+                return false;
+            }
+            if (answer4.val() == "") {
+                alert("选项四不能为空！");
+                answer4.focus();
+                return false;
+            }
+            var checkAnswer = ""
+            if (selectType == 1) {
+                var rightAnswer = $('input:radio[name="rightAnswer"]:checked').val();
+                if (rightAnswer == null) {
+                    alert("请设置答案")
+                    return
+                }
+                checkAnswer = rightAnswer
+                console.log(rightAnswer)
+            } else if (selectType == 2) {
+                var rightAnswer = $(":checkbox")
+                for (var i = 0; i < rightAnswer.length; i++) {
+                    if (rightAnswer[i].checked) {
+                        checkAnswer += rightAnswer[i].value + "_"
+                    }
+
+                }
+                if (checkAnswer.length <= 2) {
+                    alert("请选择两个或两个以上的答案")
+                    return
+                }
+                checkAnswer = checkAnswer.substring(0, checkAnswer.length - 1)
+            }
+            data = {
+                title: question.val(),
+                answer1: answer1.val(),
+                answer2: answer2.val(),
+                answer3: answer3.val(),
+                answer4: answer4.val(),
+                type: parseInt(selectType),
+                rightAnswer: checkAnswer
+            }
+
+        }
+        data["examId"] = parseInt($("#examId").val())
+        data["_csrf"] = $("#_csrf").val()
+        if ($("#question_id").length > 0) {
+            data["id"] = parseInt($("#question_id").val())
+        }
+        console.log(data)
+        jQuery.post("/admin/question/save", data, function (msg) {
+            if (msg.code === 200) {
+                alert("添加成功，跳转到试题列表");
+                window.location.href = "/admin/question/examId/" + $("#examId").val();
+                //window.navigate("admin/home")
+            } else {
+                alert(msg.message);
+            }
+        }, 'json').error(function () {
+            alert("网络连接错误，请稍后再试");
+        });
+    })
+
+    function check_question_form() {
+        var question = $("#question");
+        var answer1 = $("#answer1");
+        var answer2 = $("#answer2");
+        var answer3 = $("#answer3");
+        var answer4 = $("#answer4");
+        if (question.val() == "") {
+            alert("题目不能为空！");
+            question.focus();
+            return false;
+        }
+        if (answer1.val() == "") {
+            alert("选项一不能为空！");
+            answer1.focus();
+            return false;
+        }
+        if (answer2.val() == "") {
+            alert("选项二不能为空！");
+            answer2.focus();
+            return false;
+        }
+        if (answer3.val() == "") {
+            alert("选项三不能为空！");
+            answer3.focus();
+            return false;
+        }
+        if (answer4.val() == "") {
+            alert("选项四不能为空！");
+            answer4.focus();
+            return false;
+        }
+        return true;
+    }
+</script>
+<div th:replace="admin/header::modify_info"></div>
+<div th:replace="admin/header::modify_password"></div>
+<div th:replace="admin/header::js"></div>
+
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="admin/header :: head">
+</head>
+<body>
+<div class="my_table">
+    <div th:replace="admin/header::nav"></div>
+    <h2>首页</h2>
+    <hr/>
+    <table class="table table-bordered text-center">
+        <tr>
+            <td><span class="glyphicon glyphicon-th" aria-hidden="true"></span><br/>考试总次数<br/>
+                <span th:text="${exam_count}">0</span>
+            </td>
+            <td><span class="glyphicon glyphicon-time" aria-hidden="true"></span><br/>进行中的考试<br/>
+                <span th:text="${processing_exam_count}">0</span>
+            </td>
+            <td><span class="glyphicon glyphicon-th" aria-hidden="true"></span><br/>题目总数<br/>
+                {$question_count}
+            </td>
+            <td><span class="glyphicon glyphicon-play" aria-hidden="true"></span><br/>最近考试人数<br/>
+                {$score_count_lately}
+            </td>
+            <td><span class="glyphicon glyphicon-file" aria-hidden="true"></span><br/>资料数量<br/>
+                {$file_count}
+            </td>
+            <td><span class="glyphicon glyphicon-user" aria-hidden="true"></span><br/>注册用户<br/>
+                {$user_count}
+            </td>
+        </tr>
+    </table>
+    <hr/>
+    <div class="panel panel-primary kaoshi"
+         style="width: 48%; display: inline-block; box-shadow: 5px 5px 5px #888;">
+        <div class="panel-heading">考试列表</div>
+        <div class="panel-body">
+            <div class="list-group">
+                <!--<if condition="$exam_list"> <foreach name="exam_list" item="vo">-->
+                <p class="list-group-item">考试标题<span
+                        style="float: right !important;">参与人数</span></p>
+                <a href="" class="list-group-item">{$vo.title}<span
+                        style="float: right !important;">{$vo.status}</span></a>
+                <!--</foreach> <else /> <span
+                    style="color: red">没有考试记录！</span> </if>-->
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-primary kaoshi kaoshi1"
+         style="width: 48%; display: inline-block; float: right; box-shadow: 5px 5px 5px #888;">
+        <div class="panel-heading">最近考试分数</div>
+        <div class="panel-body">
+
+            <div class="list-group">
+                <!--<if condition="$score_list"> -->
+                <!-- <div style="text-align: center;"> -->
+                <p class="list-group-item text-center "> <span
+                        style="float: left !important;">姓名</span><span>分数</span>
+                    <span style="float: right !important;">考试时间</span></p>
+                <!-- </div> -->
+
+                <!--<foreach name="score_list" item="vo">-->
+                <!-- <div style="text-align: center;"> -->
+                <a href="" class="list-group-item text-center "> <span
+                        style="float: left !important;">{$vo.user_name}</span><span>{$vo.score}</span>
+                    <span style="float: right !important;">{$vo.exam_time|date="m-d
+							H:i",###}</span></a>
+                <!-- </div> -->
+                <!--</foreach> <else /> <span style="color: red">最近没有人参与考试！</span> </if>-->
+
+            </div>
+
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
+<script type="text/javascript">
+    var width = $(window).width();
+    if (width < 770) {
+        $(".kaoshi").css("float", "none");
+        $(".kaoshi").css("width", "100%");
+    } else {
+        $(".kaoshi").css("width", "49%");
+        $(".kaoshi1").css("float", "right");
+    }
+    window.onresize = function () {
+        var width = $(window).width();
+        if (width < 770) {
+            $(".kaoshi").css("float", "none");
+            $(".kaoshi").css("width", "100%");
+        } else {
+            $(".kaoshi").css("width", "49%");
+            $(".kaoshi1").css("float", "right");
+        }
+
+    }
+</script>
+<div th:replace="admin/header::modify_info"></div>
+<div th:replace="admin/header::modify_password"></div>
+<div th:replace="admin/header::js"></div>
+
+</body>
+</html>

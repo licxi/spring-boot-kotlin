@@ -1,0 +1,118 @@
+﻿@charset "utf-8";
+/* 后台登录页面样式 */
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    background: #f7f7f7;
+    font-size: 12px;
+}
+
+#login {
+    width: 489px;
+    height: 311px;
+    background: url(../image/login_bg.gif) no-repeat;
+    position: absolute;
+    top: 50%;
+    left: 75%;
+    margin: -155px 0 0 -244px;
+}
+
+h1 {
+    height: 85px;
+    width: 247px;
+    background: url(../image/logo.png) no-repeat;
+    margin: 37px auto 0;
+}
+
+form {
+    width: 375px;
+    height: 90px;
+    padding: 0 0 25px;
+    position: relative;
+    text-align: center;
+    margin: 100px auto 0;
+}
+
+.item {
+    width: 265px;
+    float: left;
+    text-align: left;
+    color: #666666;
+    margin-top: 18px;
+}
+
+.input {
+    border: 1px #d2d2d2 solid;
+    padding: 5px 5px 0;
+    float: right;
+    line-height: 21px;
+    height: 21px;
+    background: url(../image/inputbg.gif);
+    width: 176px;
+}
+
+.input input {
+    border-width: 0;
+    width: 150px;
+    height: 18px;
+    margin-left: 8px;
+    _margin-left: 5px;
+}
+
+label {
+    line-height: 28px;
+    font-weight: bold;
+}
+
+.icon {
+    width: 12px;
+    height: 18px;
+    overflow: hidden;
+    float: left;
+    background: url(../image/login_name.gif) 0 2px no-repeat
+}
+
+.icon2 {
+    width: 12px;
+    height: 18px;
+    float: left;
+    background: url(../image/login_password.gif) no-repeat
+}
+
+.submit {
+    width: 83px;
+    height: 75px;
+    border: 0;
+    cursor: pointer;
+    position: absolute;
+    top: 17px;
+    right: 0;
+    background: url(../image/login_submit.gif);
+    float: right;
+}
+
+.copyright {
+    color: #aaaaaa;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    margin-top: 32px;
+}
+
+.skin-container {
+    position: fixed;
+    _position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    min-width: 1000px;
+    z-index: -10;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -o-background-size: cover;
+    zoom: 1;
+    background: rgb(255, 255, 255) url(../image/login_bg.jpg?v=1.0) no-repeat center 0;
+}

@@ -1,0 +1,48 @@
+spring:
+  datasource:
+    druid:
+      url: jdbc:mysql://localhost:3306/springboot
+      username: root
+      password: 123456
+      driver-class-name: com.mysql.jdbc.Driver
+      filters: stat,wall,log4j
+      # 合并多个DruidDataSource的监控数据
+      #useGlobalDataSourceStat: true
+      # WebStatFilter配置，说明请参考Druid Wiki，配置_配置WebStatFilter
+      web-stat-filter:
+        enabled: true #是否启用StatFilter默认值true
+        url-pattern: /*
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+      # StatViewServlet配置，说明请参考Druid Wiki，配置_StatViewServlet配置
+      stat-view-servlet:
+        enabled: true #是否启用StatViewServlet默认值true
+        url-pattern: /druid/*
+        reset-enable: false
+        login-username: admin
+        login-password: admin
+        #llow:
+        #deny:
+      # Spring监控配置，说明请参考Druid Github Wiki，配置_Druid和Spring关联监控配置
+      aop-patterns: com.example.bootkotlin.service.impl.*
+      filter:
+        stat:
+          enabled: true # Spring监控AOP切入点，如x.y.z.service.*,配置多个英文逗号分隔
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+          hibernate:
+            format_sql: true
+
+#logback 配置
+logging.config: classpath:logback-boot.xml
+spring.jpa.open-in-view: true
+
+#spring.mvc.throw-exception-if-no-handler-found: true #处理404 500等异常
+#spring.resources.add-mappings: false
+
+spring.thymeleaf.cache: false #开发过程关闭模板缓存
+spring.thymeleaf.mode: LEGACYHTML5
+server:
+  port: 8080  #端口号

@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <!--<link rel="shortcut icon" href="/image/favicon.ico" type="image/x-icon"/>-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1"/>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+    <title>后台登录</title>
+    <link rel="stylesheet" href="../../static/css/login.css" th:href="@{/css/login.css}"/>
+</head>
+<body onkeydown="input_enter()" class="skin-container">
+<!-- 背景 -->
+<div id="login">
+    <div class="warp">
+        <div class="content">
+            <!-- <h1>后台登录</h1> -->
+            <!--<img th:src="@{/image/login_logo.png}" style="margin-top: 10px;margin-left: 35%"/>-->
+            <!--<form th:action="@{/admin/login}" method="post" name="login_main" id="login_main">-->
+            <form method="post" name="login_main" id="login_main">
+                <div class="item">
+                    <div class="input">
+                        <div class="icon" title="用户名"></div>
+                        <input value="" tabindex="1" id="admin_name" type="text"
+                               name="name"/>
+                    </div>
+                    <label>用户名：</label>
+                </div>
+                <div class="item">
+                    <div class="input">
+                        <div class="icon2" title="密码"></div>
+                        <input value="" tabindex="2" id="admin_password" type="password"
+                               name="password"/>
+                    </div>
+                    <label>密&nbsp;码：</label>
+                </div>
+                <input th:value="${_csrf.getToken()}" name="_csrf" id="_csrf" hidden>
+                <input type="button" value="" class="submit" onclick="do_submit()"/>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type='text/javascript'>
+    function input_enter() {
+        if (window.event.keyCode === 13) {
+            do_submit();
+            //window.location.href="www.baidu.com"
+        }
+    }
+
+    function do_submit() {
+        var admin_name = $("#admin_name").val();
+        var admin_password = $("#admin_password").val();
+        if (admin_password === "" || admin_name === "") {
+            alert('登录名与密码不能为空 ');
+            $("#admin_name").focus();
+            return false;
+        } else {
+            //$("#login_main").submit()
+            /*检查用户名和密码是否匹配  */
+            var url = "/admin/login";
+            jQuery.post(url, {
+                name: admin_name,
+                password: admin_password,
+                _csrf: $("#_csrf").val()
+            }, function (msg) {
+                if (msg.code === 200) {
+                    //alert('登录成功，正在转向后台主页！');
+
+                    window.location.href = "/admin/home";
+                    //window.navigate("admin/home")
+                } else {
+                    alert(msg.message);
+                }
+            }, 'json').error(function () {
+                alert("网络连接错误，请稍后再试");
+            });
+        }
+    }
+
+</script>
+</body>
+</html>

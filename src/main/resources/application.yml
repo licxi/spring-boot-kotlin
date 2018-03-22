@@ -1,0 +1,3 @@
+spring:
+  profiles:
+    active: multi-datasource  #根据不同环境，使用不同配置文件

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="admin/header :: head">
+    <meta charset="UTF-8">
+</head>
+<body>
+<div th:replace="admin/header::nav"></div>
+<!-- 主容器 start -->
+<link href="../../../static/css/fileinput.css" rel="stylesheet" type="text/css" th:href="@{/css/fileinput.css}"/>
+<script src="../../../static/js/fileinput.js" type="text/javascript" th:src="@{/js/fileinput.js}"></script>
+<script src="../../../static/js/fileinput_locale_zh.js" type="text/javascript"
+        th:src="@{/js/fileinput_locale_zh.js}"></script>
+<div class="my_table">
+    <!-- 标题 start -->
+    <div>
+        <h2>导入题目 <a class="btn btn-info navbar-right" href="">返回题目列表</a>
+        </h2>
+        <hr>
+        <!-- 标题 end -->
+
+    </div>
+
+    <!-- 主内容 start -->
+    <div class="formBox" style="margin-bottom: 200px;margin-top: 10px">
+        <div class="control-group">
+            <label>表格格式：</label><br> <img src="IMG/excel_format.png">
+        </div>
+        <form enctype="multipart/form-data">
+            <hr style="border: 2px dotted">
+            <label>上传excel表格，支持xls和xlsx格式<font color="red">(内容务必要符合表格格式!!!)</font></label>
+            <input id="excelData" name="excelData" type="file" multiple style="width: 100px;height: 150px;">
+        </form>
+    </div>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        $('#excelData').fileinput({
+            language: 'zh',
+            uploadUrl: "/admin/question/import", /* 文件上传的的地址 */
+            maxFileCount: 1, /* 设置上传的文件的数量 */
+            allowedFileExtensions: ['xlsx', 'xls'], /* 允许上传的文件格式 */
+            uploadExtraData: {"examId": [[${examId}]], "_csrf": [[${_csrf.getToken()}]]}
+        });
+        $("#excelData").on("fileuploaded", function (event, data, previewId, index) {
+            if (data.response.code == 200) {
+                //if (confirm("上传成功！是否跳转到试题列表")) {
+                window.location.href = "/admin/question/examId/" + [[${examId}]];
+                //}
+            } else {
+                alert("上传失败！请重试:" + data.response.message);
+            }
+        });
+        /*]]>*/
+    </script>
+    <!-- 主内容 end -->
+    <!-- 脚部 start -->
+    <div th:replace="admin/header::modify_info"></div>
+    <div th:replace="admin/header::modify_password"></div>
+    <div th:replace="admin/header::js"></div>
+</div>
+</body>
+</html>
+<!-- 脚部 end -->

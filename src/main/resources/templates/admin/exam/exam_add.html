@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="admin/header :: head">
+    <meta charset="UTF-8">
+</head>
+<body>
+<style type="text/css">
+    .form-signin .form-control {
+        position: relative;
+        height: auto;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .form-signin {
+        max-width: 330px;
+        padding-top: 50px;
+        margin: 0 auto;
+    }
+</style>
+<div th:replace="admin/header::nav"></div>
+<div class="my_table">
+    <h2 th:text="${exam!=null?'编辑考试':'添加考试'}"><a class="btn btn-info" style="float: right;" th:href="@{/admin/exam}">返回考试列表</a>
+    </h2>
+    <hr>
+    <!-- 标题 end -->
+    <!-- 内容区块 start -->
+    <div class="form-signin">
+        <form method="post" id="form">
+            <input name="id" th:value="${exam !=null ?exam.id:0}" value="" type="hidden" th:if="${exam != null}"/>
+            <input name="author" th:value="${exam !=null ?exam.author:0}" value="" type="hidden"
+                   th:if="${exam != null}"/>
+            <input th:value="${_csrf.getToken()}" name="_csrf" id="_csrf" hidden>
+            <div class="input-group " id="id">
+            <span class="input-group-addon" id="sizing-addon1">
+                <span class="glyphicon glyphicon-align-center " aria-hidden="true"> 
+                </span>
+            </span>
+                <input id="title" name="title" class="form-control" placeholder="填写考试标题" type="text"
+                       value="考试标题" th:value="${exam!=null?exam.title:''}"/>
+            </div>
+            <br/>
+            <div class="input-group date" id="start_time">
+            <span class="input-group-addon" id="sizing-addon1">
+                    <span class="glyphicon glyphicon-calendar " aria-hidden="true">
+                    </span>
+                </span>
+                <input id="in_start_time" name="startTime"
+                       th:value="${exam!=null?(#dates.format(exam.startTime,'yyyy-MM-dd HH:mm')):''}"
+                       class="form-control" placeholder="选择考试开始时间" type="text" readonly/>
+            </div>
+            <br/>
+
+            <div class="input-group date" id="end_time">
+            <span class="input-group-addon" id="sizing-addon1">
+                    <span class="glyphicon glyphicon-calendar " aria-hidden="true">
+                    </span>
+                </span>
+                <input id="in_end_time" name="endTime"
+                       th:value="${exam != null?(#dates.format(exam.endTime,'yyyy-MM-dd HH:mm')):''}"
+                       class="form-control" placeholder="选择考试结束时间" type="text" readonly/>
+
+            </div>
+            <br/>
+        </form>
+        <div>
+            <input class="btn btn-primary Sub form-control " type="button" value="保存" id="sumbit" onclick="submit()"/>
+        </div>
+    </div>
+    <!-- 主内容 end -->
+    <link rel="stylesheet" type="text/css" href=".././../../static/css/bootstrap-datetimepicker.min.css"
+          th:href="@{/css/bootstrap-datetimepicker.min.css}"/>
+    <script type="text/javascript" src=".././../../static/js/bootstrap-datetimepicker.min.js"
+            th:src="@{/js/bootstrap-datetimepicker.min.js}"></script>
+    <script type="text/javascript" src=".././../../static/js/bootstrap-datetimepicker.zh-CN.js"
+            th:src="@{/js/bootstrap-datetimepicker.zh-CN.js}"></script>
+    <script type="text/javascript">
+        function submit() {
+            if (check_form()) {
+                var url = "/admin/exam/save";
+                var data = $("#form").serializeArray()
+                console.log(data)
+                jQuery.post(url, data, function (msg) {
+                    if (msg.code === 200) {
+                        //alert('登录成功，正在转向后台主页！');
+                        window.location.href = "/admin/exam/";
+                        //window.navigate("admin/home")
+                    } else {
+                        alert(msg.message);
+                    }
+                }, 'json').error(function () {
+                    alert("网络连接错误，请稍后再试");
+                });
+            }
+        }
+
+        function check_form() {
+
+            if ($("#title").val() == "") {
+                alert("请填写标题");
+                $("#title").focus();
+                return false;
+            }
+            if ($("#in_start_time").val() == "") {
+                alert("请填写考试开始时间");
+                $("#in_start_time").focus();
+                return false;
+            }
+            if ($("#in_end_time").val() == "") {
+                alert("请填写考试结束时间");
+                $("#in_end_time").focus();
+                return false;
+            }
+            return true;
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('#start_time').datetimepicker({format: 'yyyy-mm-dd hh:ii', language: 'zh-CN', minView: 0});
+            $('#end_time').datetimepicker({format: 'yyyy-mm-dd hh:ii', language: 'zh-CN', minView: 0});
+            $("#start_time").datetimepicker().on("changeDate", function (e) {
+                //$('#end_time').data("DateTimePicker").endDate(e.date);
+                //console.log("开始时间"+e.date)
+                $('#end_time').datetimepicker('setStartDate', e.date);
+            });
+            $("#end_time").datetimepicker().on("changeDate", function (e) {
+                //$('#start_time').data("DateTimePicker").startDate(e.date);
+                //console.log("结束时间"+e.date)
+                $('#start_time').datetimepicker('setEndDate', e.date);
+            });
+        });
+    </script>
+</div>
+
+<div th:replace="admin/header::modify_info"></div>
+<div th:replace="admin/header::modify_password"></div>
+<div th:replace="admin/header::js"></div>
+
+</body>
+</html>
